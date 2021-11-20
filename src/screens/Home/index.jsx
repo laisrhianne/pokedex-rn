@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 
-import { Container, Title } from './styles.js';
+import { Container } from './styles.js';
 
 import api from '../../services/api';
 
@@ -15,7 +15,7 @@ export default function Home() {
     const response = await api.get('pokemon', { params: { limit: 150 } });
     if (response.data && response.data.results) {
       const pokemonData = response.data.results.map((data) => ({
-        ...data,
+        title: data.name,
         id: data.url.split('pokemon/')[1].replace('/', ''),
       }));
       setPokemons(pokemonData);
@@ -28,9 +28,9 @@ export default function Home() {
 
   return (
     <Container>
-      <TouchableOpacity onPress={() => navigation.navigate('Details')}>
-        <Title>Ir para página de Detalhes</Title>
-      </TouchableOpacity>
+      {pokemons.length ? (
+        <AutocompleteDropdown dataSet={pokemons} onSelectItem={(item) => navigation.navigate('Details', { item })} />
+      ) : null}
     </Container>
   );
 }
